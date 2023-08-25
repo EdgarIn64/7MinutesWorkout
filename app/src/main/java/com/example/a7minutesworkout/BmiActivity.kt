@@ -14,7 +14,9 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 class BmiActivity : AppCompatActivity() {
 
@@ -63,12 +65,22 @@ class BmiActivity : AppCompatActivity() {
     private fun addHistory(historyDao: HistoryDao) {
         val bmi = binding?.tvResult?.text!!.toString()
         val category = binding?.tvCategory?.text!!.toString()
-        val date = dateNow()
+        val date = getCurrentDateTime()
+        val dateInString = date.toString("dd/MM/yyyy")
         lifecycleScope.launch {
-            historyDao.insert(HistoryEntity(ibm=bmi, category=category, date=date))
+            historyDao.insert(HistoryEntity(ibm=bmi, category=category, date=dateInString))
             Toast.makeText(applicationContext, "History saved", Toast.LENGTH_SHORT).show()
         }
 
+    }
+
+    fun Date.toString(format: String, locale: Locale = Locale.getDefault()): String {
+        val formatter = SimpleDateFormat(format, locale)
+        return formatter.format(this)
+    }
+
+    fun getCurrentDateTime(): Date {
+        return Calendar.getInstance().time
     }
 
     @SuppressLint("SimpleDateFormat")
